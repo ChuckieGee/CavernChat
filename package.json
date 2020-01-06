@@ -1,0 +1,16 @@
+{
+  "name": "website-using-express",
+  "version": "0.0.1",
+  "description": "Simple chat app using sockets",
+  "main": "server.js",
+  "scripts": {
+    "start": "node Server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "socket.io": "^2.3.0",
+    "mongodb": "^2.2.33"
+  }
+}
