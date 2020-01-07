@@ -11,7 +11,6 @@
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
     <script defer src="http://localhost:3000/socket.io/socket.io.js"></script>
-    <script src="script.js"></script>
 
     <title>Mongo Chat with Socket.io</title>
 
@@ -202,12 +201,20 @@
         // Get Status From Server
         socket.on('msgStatus', function(data){
           // get message status
-          setMsgStatus((typeof data === 'object')? data.message : data);
+          //setMsgStatus((typeof data === 'object')? data.message : data);
+
 
           // If status is clear, clear text
           if(data.clear){
               msgTextarea.value = '';
           }
+        });
+
+
+        //handle erros
+        socket.on('Error', function(){
+          msgStatus.value = "error";
+          console.log('An error has occured');
         });
 
         //Handle user inputting a username.
@@ -232,6 +239,11 @@
               messages.insertBefore(message, messages.lastChild);
             }
           }
+        });
+
+        //Handle users disconnecting
+        socket.on('user-disconnected', function(){
+         
         });
 
         // Handle user sending a message

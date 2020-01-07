@@ -53,7 +53,9 @@ mongo.connect('mongodb://127.0.0.1/mongochat', function(err, db){
             // Check for name and message
             if(name == '' || message == ''){
                 // Send error status
+                socket.emit('Error');
                 sendMsgStatus('Please enter a name and a message');
+                console.log('enter a name and/or message.')
             } else {
                 // Insert message
                 chat.insert({name: name, message: message}, function(){
@@ -66,11 +68,14 @@ mongo.connect('mongodb://127.0.0.1/mongochat', function(err, db){
                     });
                 });
             }
+
+
         });
-        room.find().limit(100).sort({_id:1}).toArray(function(err, res){
-            if(err){
-                throw err;
-        }
+
+        socket.on('disconnect', function() {
+            socket.emit('user-disconnected');
+            console.log('Got disconnect!');
+        });
         // Handle clear
         socket.on('msgClear', function(data){
             // Remove all chats from collection
@@ -81,7 +86,12 @@ mongo.connect('mongodb://127.0.0.1/mongochat', function(err, db){
         });
 
  //Handle rooms///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    
+        
+        room.find().limit(100).sort({_id:1}).toArray(function(err, res){
+            if(err){
+                throw err;
+        }
+
         socket.on('roomInput', function(data){
             let name = data.name;
     
