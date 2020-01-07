@@ -73,7 +73,7 @@ mongo.connect('mongodb://127.0.0.1/mongochat', function(err, db){
         });
 
         socket.on('disconnect', function() {
-            socket.emit('user-disconnected');
+            socket.broadcast.emit('user-disconnected');
             console.log('Got disconnect!');
         });
         // Handle clear

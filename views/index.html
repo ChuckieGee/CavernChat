@@ -264,8 +264,13 @@
         });
 
         //Handle users disconnecting
-        socket.on('user-disconnected', function(){
+        socket.on('user-disconnected', function(username){
           console.log('A user disconnected!');
+          var message = document.createElement('div');
+              message.setAttribute('class', 'chat-message');
+              message.textContent = "a user disconnected from the room.";
+              messages.appendChild(message);
+              messages.insertBefore(message, messages.lastChild);
         });
 
         // Handle user sending a message
