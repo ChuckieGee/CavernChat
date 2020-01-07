@@ -15,6 +15,7 @@ mongo.connect('mongodb://127.0.0.1/mongochat', function(err, db){
     client.on('connection', function(socket){
         let chat = db.collection('chats');
         let room = db.collection('rooms');
+        const _id = socket.id
 
         // Create function to send  message status
         sendMsgStatus = function(s){
@@ -72,7 +73,7 @@ mongo.connect('mongodb://127.0.0.1/mongochat', function(err, db){
 
         });
 
-        socket.on('disconnect', function() {
+        socket.on('disconnect', () => {
             socket.broadcast.emit('user-disconnected');
             console.log('Got disconnect!');
         });

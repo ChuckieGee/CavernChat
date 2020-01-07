@@ -132,7 +132,7 @@
                   MongoChat 
                   <button id="clear" class="btn btn-danger">Clear</button>
               </h1>
-              <div id="msgStatus">msgStatus:</div>
+              <div id="msgStatus">msgStatus</div>
               <div id="chat">
 
                   <div class="form-group form-inline">
@@ -185,6 +185,8 @@
 
         // Handle Output
         socket.on('msgOutput', function(data){
+          msgStatus.innerHTML = "";
+          msgStatus.style.backgroundColor = "white";
           msgTextarea.value = '';
           //DEBUG console.log(data);
           if(data.length){
@@ -216,40 +218,51 @@
 
         //handle erros
         socket.on('Error', function(){
-          msgStatus.value = "error";
+          msgStatus.innerHTML = "please enter some contents of your message.";
+          msgStatus.style.backgroundColor = "red";
           console.log('An error has occured');
-          msgStatus.value = 'An error has occured, please enter a name or a message.'
+          msgStatus.value = ''
         });
 
         //Handle user inputting a username.
         submitNameBtn.addEventListener('click', function(){
-          usernameEntered = 1;
-          submitNameBtn.style.visibility = 'hidden';
-          username.readOnly = 'true';
-          socket.emit('nameInput', {
-            name:username.value
-          })
+          if (username.value === ""){
+            msgStatus.innerHTML = "Please enter a username."
+            msgStatus.style.backgroundColor = "red";
+          }else{
+              usernameEntered = 1;
+              msgStatus.innerHTML = ""
+              msgStatus.style.backgroundColor = "white"
+              submitNameBtn.style.visibility = 'hidden';
+              username.readOnly = 'true';
+              socket.emit('nameInput', {
+                name:username.value
+            })
+          }
+          
         });
 
         username.addEventListener('keydown', function(event){
-          if (usernameEntered === 0){
-            if(event.which === 13 && event.shiftKey == false){
-              usernameEntered = 1;
+          if(event.which === 13 && event.shiftKey == false && username.value != ""){
+            msgStatus.innerHTML = ""
+            msgStatus.style.backgroundColor = "white"
+            usernameEntered = 1;
             submitNameBtn.style.visibility = 'hidden';
             username.readOnly = 'true';
             socket.emit('nameInput', {
             name:username.value
             });
             event.preventDefault();
-            }
           } else {
-            console.log("You've already entered a username, try reconnecting if the issue persists.");
+            msgStatus.innerHTML = "Please enter a username";
+            msgStatus.style.backgroundColor = "red";
           }
-          
-        });
+          });
 
         //Handle users joining
         socket.on('userJoined', function(data){
+          msgStatus.innerHTML = "";
+          msgStatus.style.backgroundColor = "white";
           console.log(data);
           if(data.length){
             for(var x = 0;x < data.length;x++){
@@ -264,7 +277,8 @@
         });
 
         //Handle users disconnecting
-        socket.on('user-disconnected', function(username){
+        socket.on('user-disconnected', data => {
+          console.log(data);
           console.log('A user disconnected!');
           var message = document.createElement('div');
               message.setAttribute('class', 'chat-message');
