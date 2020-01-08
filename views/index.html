@@ -132,7 +132,8 @@
                   MongoChat 
                   <button id="clear" class="btn btn-danger">Clear</button>
               </h1>
-              <div id="msgStatus">msgStatus</div>
+              <div id="msgStatus" class ="alert" role="alert"></div>
+              <div id="usernameDisplay" class ="alert" role="alert"></div>
               <div id="chat">
 
                   <div class="form-group form-inline">
@@ -172,10 +173,6 @@
       var usernameBtn = element('submitNameBtn');
       var clearBtn = element('clear');
 
-      //create a check to see if a user has already connected from this socket
-      var usernameEntered = 0;
-
-
       // Connect to socket.io
       var socket = io.connect('http://127.0.0.1:4000');
 
@@ -183,7 +180,7 @@
       if(socket !== undefined){
         console.log('Connected to socket...');
 
-        // Handle Output
+        // Handle message output
         socket.on('msgOutput', function(data){
           msgStatus.innerHTML = "";
           msgStatus.style.backgroundColor = "white";
@@ -216,37 +213,35 @@
         });
 
 
-        //handle erros
+      //handle errors
         socket.on('Error', function(){
-          msgStatus.innerHTML = "please enter some contents of your message.";
-          msgStatus.style.backgroundColor = "red";
+          msgStatus.innerHTML = "Please enter a message";
+          msgStatus.className = "alert alert-danger";
           console.log('An error has occured');
-          msgStatus.value = ''
         });
 
-        //Handle user inputting a username.
+      //Handle user inputting a username.
         submitNameBtn.addEventListener('click', function(){
           if (username.value === ""){
             msgStatus.innerHTML = "Please enter a username."
-            msgStatus.style.backgroundColor = "red";
+            msgStatus.className = "alert alert-danger";
           }else{
-              usernameEntered = 1;
-              msgStatus.innerHTML = ""
-              msgStatus.style.backgroundColor = "white"
+              msgStatus.innerHTML = "";
+              msgStatus.className = "alert";
+              usernameDisplay.className = "alert alert-success"
+              usernameDisplay.innerHTML = "You're username is: " + username.value;
               submitNameBtn.style.visibility = 'hidden';
               username.readOnly = 'true';
               socket.emit('nameInput', {
                 name:username.value
             })
           }
-          
         });
 
         username.addEventListener('keydown', function(event){
           if(event.which === 13 && event.shiftKey == false && username.value != ""){
-            msgStatus.innerHTML = ""
-            msgStatus.style.backgroundColor = "white"
-            usernameEntered = 1;
+            msgStatus.innerHTML = "";
+            msgStatus.className = "alert";
             submitNameBtn.style.visibility = 'hidden';
             username.readOnly = 'true';
             socket.emit('nameInput', {
@@ -254,15 +249,35 @@
             });
             event.preventDefault();
           } else {
-            msgStatus.innerHTML = "Please enter a username";
-            msgStatus.style.backgroundColor = "red";
-          }
-          });
+              msgStatus.innerHTML = "Please enter a username";
+              msgStatus.className = "alert alert-danger";
+            }
+        });
 
-        //Handle users joining
+      // Handle user sending a message
+        msgTextarea.addEventListener('keydown', function(event){
+          if(event.which === 13 && event.shiftKey == false){
+            // Emit to server input
+            socket.emit('msgInput', {
+              name:username.value,
+              message:msgTextarea.value
+            });
+            event.preventDefault();
+          }
+        });
+
+        sendMsgBtn.addEventListener('click', function(){
+          socket.emit('msgInput', {
+            name:username.value,
+            message:msgTextarea.value,
+          })
+        });
+
+
+      //Handle users joining
         socket.on('userJoined', function(data){
           msgStatus.innerHTML = "";
-          msgStatus.style.backgroundColor = "white";
+          msgStatus.className = "alert";
           console.log(data);
           if(data.length){
             for(var x = 0;x < data.length;x++){
@@ -287,25 +302,7 @@
               messages.insertBefore(message, messages.lastChild);
         });
 
-        // Handle user sending a message
-        msgTextarea.addEventListener('keydown', function(event){
-          if(event.which === 13 && event.shiftKey == false){
-            // Emit to server input
-            socket.emit('msgInput', {
-              name:username.value,
-              message:msgTextarea.value
-            });
-            event.preventDefault();
-          }
-        });
-
-        sendMsgBtn.addEventListener('click', function(){
-          socket.emit('msgInput', {
-            name:username.value,
-            message:msgTextarea.value,
-          })
-        });
-
+        
         // Handle Chat Clear
         clearBtn.addEventListener('click', function(){
           socket.emit('msgClear');

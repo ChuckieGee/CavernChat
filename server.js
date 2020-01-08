@@ -13,14 +13,12 @@ mongo.connect('mongodb://127.0.0.1/mongochat', function(err, db){
 
     // Connect to Socket.io
     client.on('connection', function(socket){
+        console.log('A user connected.');
         let chat = db.collection('chats');
-        let room = db.collection('rooms');
+        let room = db.collection('rooms'); //NEEDS COMPLETING
         const _id = socket.id
 
-        // Create function to send  message status
-        sendMsgStatus = function(s){
-            socket.emit('msgStatus', s);
-        }
+        
 
         // Get chats from mongo collection
         chat.find().limit(100).sort({_id:1}).toArray(function(err, res){
@@ -86,6 +84,12 @@ mongo.connect('mongodb://127.0.0.1/mongochat', function(err, db){
             });
         });
 
+
+        // Create function to send  message status
+        sendMsgStatus = function(s){
+            socket.emit('msgStatus', s);
+        }
+
  //Handle rooms///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         
         room.find().limit(100).sort({_id:1}).toArray(function(err, res){
@@ -129,6 +133,7 @@ mongo.connect('mongodb://127.0.0.1/mongochat', function(err, db){
     });
 
 });
+////\ /\ /\ /\ /\ /\ /\ /\ /\ROOMS STUFF NEEDS WORK/\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\
 
 //Handle routing
 
