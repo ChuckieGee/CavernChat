@@ -119,12 +119,10 @@
     <!-- Page content -->
   <div class="container">
       <div class="row">
-
         <div class="col-md-6 offset-md-3 col-sm-12">
           <h1>Welcome</h1>
           <p>Below you will find an open chat room, please enter your name and then you can send messages!</p>
         </div>
-
       </div>
       <div class="row">
           <div class="col-md-6 offset-md-3 col-sm-12">
@@ -133,15 +131,14 @@
                   <button id="clear" class="btn btn-danger">Clear</button>
               </h1>
               <div id="msgStatus" class ="alert" role="alert"></div>
-              <div id="usernameDisplay" class ="alert" role="alert"></div>
+              
               <div id="chat">
-
                   <div class="form-group form-inline">
                     <input type="text" id="username" class="form-control col" placeholder="Enter a name...">
                     <button type="button" class="btn btn-secondary" id="submitNameBtn">Submit</button>
                   </div>
-                  <div class="displayName"></div>
                   <br>
+                  <div id="usernameDisplay" class ="alert" role="alert"></div>
                   <div class="card">
                       <div id="messages" style='overflow:scroll' class="card-block">
 
@@ -172,6 +169,7 @@
       var username = element('username');
       var usernameBtn = element('submitNameBtn');
       var clearBtn = element('clear');
+      var usernameDisplay = element('usernameDisplay');
 
       // Connect to socket.io
       var socket = io.connect('http://127.0.0.1:4000');
@@ -183,7 +181,7 @@
         // Handle message output
         socket.on('msgOutput', function(data){
           msgStatus.innerHTML = "";
-          msgStatus.style.backgroundColor = "white";
+          msgStatus.className = "alert";
           msgTextarea.value = '';
           //DEBUG console.log(data);
           if(data.length){
@@ -228,8 +226,9 @@
           }else{
               msgStatus.innerHTML = "";
               msgStatus.className = "alert";
+              username.style.visibility = 'hidden';
               usernameDisplay.className = "alert alert-success"
-              usernameDisplay.innerHTML = "You're username is: " + username.value;
+              usernameDisplay.innerHTML = "Your username is: " + username.value;
               submitNameBtn.style.visibility = 'hidden';
               username.readOnly = 'true';
               socket.emit('nameInput', {
@@ -241,9 +240,12 @@
         username.addEventListener('keydown', function(event){
           if(event.which === 13 && event.shiftKey == false && username.value != ""){
             msgStatus.innerHTML = "";
-            msgStatus.className = "alert";
-            submitNameBtn.style.visibility = 'hidden';
-            username.readOnly = 'true';
+              msgStatus.className = "alert";
+              username.style.visibility = 'hidden';
+              usernameDisplay.className = "alert alert-success"
+              usernameDisplay.innerHTML = "Your username is: " + username.value;
+              submitNameBtn.style.visibility = 'hidden';
+              username.readOnly = 'true';
             socket.emit('nameInput', {
             name:username.value
             });

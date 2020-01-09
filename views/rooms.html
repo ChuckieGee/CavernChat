@@ -12,7 +12,7 @@
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
     <script defer src="http://localhost:3000/socket.io/socket.io.js"></script>
 
-    <title>Mongo Chat with Socket.io</title>
+    <title>Socket.io Rooms</title>
 
     <style>
     .vertical-nav {
@@ -122,7 +122,7 @@
 
         <div class="col-md-6 offset-md-3 col-sm-12">
           <h1>Welcome</h1>
-          <p>Below you will find a list of rooms, please enter a room, your name and then you can send messages!</p>
+          <p>Below you will find a list of rooms, they currenty dont work, but in the future you'll be able to enter a room, enter your name and then you can send messages!</p>
         </div>
 
       </div>
@@ -131,16 +131,18 @@
               <h1 class="text-center">
                   MongoChat rooms
               </h1>
+              <div class="roomStatus"></div>
               <div id="chat">
 
                   <div class="form-group form-inline">
                     <input type="text" id="roomName" class="form-control col" placeholder="Enter a room name...">
-                    <button type="button" class="btn btn-secondary" id="submitRoomBtn">Submit</button>
+                    <button type="button" class="btn btn-secondary" id="submitRoomBtn">Create Room</button>
                   </div>
                   <br>
                   <h1>Rooms</h1>
                   <div class="card">
                       <div id="rooms" style='overflow:scroll' class="card-block">
+                        <a href="/holder">Gaming</a>
                       </div>
                   </div>
                   <br>
@@ -161,6 +163,7 @@
       var rooms = element('rooms');
       var roomName = element('roomName');
       var roomNameBtn = element('submitRoomBtn');
+      var roomStatus = element('roomStatus');
 
       // Connect to socket.io
       var socket = io.connect('http://127.0.0.1:4000');
@@ -170,46 +173,53 @@
         console.log('Connected to socket...');
 
         // Handle Output
-        socket.on('msgOutput', function(data){
-          msgTextarea.value = '';
-          //DEBUG console.log(data);
-          if(data.length){
-            for(var x = 0;x < data.length;x++){
-              // Build out room div
-              var room = document.createElement('div');
-              room.style.border = "1px solid gray";
-              room.setAttribute('class', 'chat-room');
-              room.textContent = data[x].name+": "+data[x].room;
+        roomNameBtn.addEventListener('click', function(){
+          var room = document.createElement('div');
+          var a = document.createElement('a');
+          var link = document.createTextNode(roomName.value);
+              room.setAttribute('class', 'chat-message');
+              room.textContent = document.createElement('a');
+              a.appendChild(link);
+              a.href = "/holder";
+              room.appendChild(a);
               rooms.appendChild(room);
               rooms.insertBefore(room, rooms.lastChild);
+        });
+      //Create room Btn and functionality
+        roomNameBtn.addEventListener('keydown', function(event){
+          if(event.which === 13 && event.shiftKey == false && roomName.value != ""){
+            roomStatus.innerHTML = "";
+            roomStatus.className = "alert";
+            submitNameBtn.style.visibility = 'hidden';
+            username.readOnly = 'true';
+            socket.emit('nameInput', {
+            name:username.value
+            });
+            event.preventDefault();
+          } else {
+              roomStatus.innerHTML = "Please enter a username";
+              roomStatus.className = "alert alert-danger";
             }
-            rooms.scrollTop = rooms.scrollHeight;
-          }
         });
 
         // Get Status From Server
-        socket.on('msgStatus', function(data){
+        socket.on('roomStatus', function(data){
           // get room status
-          //setMsgStatus((typeof data === 'object')? data.room : data);
+          //setroomStatus((typeof data === 'object')? data.room : data);
 
 
           // If status is clear, clear text
           if(data.clear){
-              msgTextarea.value = '';
+              roomTextarea.value = '';
           }
         });
 
 
         //handle errors
         socket.on('Error', function(){
-          msgStatus.value = "error";
+          roomStatus.value = "error";
           console.log('An error has occured');
-          msgStatus.value = 'An error has occured, please enter a name or a room.'
-        });
-
-        //Handle a room being created.
-        roomNameBtn.addEventListener('click', function(){
-          socket.emit('roomInput');
+          roomStatus.value = 'An error has occured, please enter a name or a room.'
         });
 
         //Handle users joining

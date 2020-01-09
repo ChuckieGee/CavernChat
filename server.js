@@ -25,7 +25,6 @@ mongo.connect('mongodb://127.0.0.1/mongochat', function(err, db){
             if(err){
                 throw err;
             }
-
             // Emit the messages
             socket.emit('msgOutput', res);
         });
@@ -90,7 +89,7 @@ mongo.connect('mongodb://127.0.0.1/mongochat', function(err, db){
             socket.emit('msgStatus', s);
         }
 
- //Handle rooms///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+ //Handle rooms - THIS NEEDS WORK///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         
         room.find().limit(100).sort({_id:1}).toArray(function(err, res){
             if(err){
@@ -169,6 +168,10 @@ router.use(function (req,res,next) {
 
   router.get("/info",function(req,res){
     res.sendFile(path + "info.html");
+  });
+
+  router.get("/holder",function(req,res){
+    res.sendFile(path + "holder.html");
   });
   
   app.use("/",router);
