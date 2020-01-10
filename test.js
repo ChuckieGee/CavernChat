@@ -38,7 +38,7 @@ describe('Webpages Tests', function(){
             done();
         })
     });
-    it('This should return pass if "friends" loads correctly.', function(done){
+    it('This should return pass if "about" loads correctly.', function(done){
         request('http://localhost:3000/about', function(err, res, body){
             var bigString = res.body;
             var searchString = bigString.search("<title>About</title>")
