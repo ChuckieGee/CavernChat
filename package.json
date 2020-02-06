@@ -17,5 +17,8 @@
     "mongodb": "^2.2.33",
     "request": "^2.88.0",
     "socket.io": "^2.3.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.2"
   }
 }
