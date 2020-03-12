@@ -173,6 +173,10 @@ router.use(function (req,res,next) {
   router.get("/holder",function(req,res){
     res.sendFile(path + "holder.html");
   });
+
+  router.get("/createRoom",function(req,res){
+    res.sendFile(path + "CreateRoom.html");
+  });
   
   app.use("/",router);
   
