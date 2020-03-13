@@ -3,7 +3,18 @@ const client = require('socket.io').listen(4000).sockets;
 const express = require('express');
 var app = express();
 var router = express.Router();
-var path = __dirname + '/views/';
+
+//IMPORTS
+var indexRoutes = require('./routes/index')
+
+//VIEW ENGINE
+app.set('view engine', 'html');
+app.engine('html', function (path, options, callbacks){
+    false.readfile(path, 'utf-8', callback);
+});
+
+app.use(express.static(__dirname));
+
 
 // Connect to mongo
 mongo.connect('mongodb://127.0.0.1/mongochat', function(err, db){
@@ -132,9 +143,27 @@ mongo.connect('mongodb://127.0.0.1/mongochat', function(err, db){
     });
 
 });
-////\ /\ /\ /\ /\ /\ /\ /\ /\ROOMS STUFF NEEDS WORK/\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\
 
 //Handle routing
+app.use('/', indexRoutes);
+
+module.exports = app;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //Define router and get HTTP requests
 router.use(function (req,res,next) {
