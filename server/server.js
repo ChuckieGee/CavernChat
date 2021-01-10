@@ -149,22 +149,6 @@ app.use('/', indexRoutes);
 
 module.exports = app;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //Define router and get HTTP requests
 router.use(function (req,res,next) {
     console.log("/" + req.method);
